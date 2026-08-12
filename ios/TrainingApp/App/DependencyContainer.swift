@@ -9,14 +9,30 @@ final class DependencyContainer {
     /// 应用启动配置。
     let environment: AppEnvironment
 
+    /// 手动界面与未来 Agent 共用的业务入口；阶段 D 的 Feature 只接收这个抽象接口。
+    let trainingApplication: any TrainingApplication
+
     /// 允许测试传入自定义配置，而正式 App 使用 `live()` 创建默认配置。
-    init(environment: AppEnvironment) {
+    init(
+        environment: AppEnvironment,
+        trainingApplication: any TrainingApplication
+    ) {
         self.environment = environment
+        self.trainingApplication = trainingApplication
     }
 
     /// 创建正式运行环境使用的依赖容器。
     static func live() -> DependencyContainer {
-        DependencyContainer(environment: .live)
+        let repository = InMemoryTrainingRepository(calendar: .current)
+        let application = DefaultTrainingApplication(
+            repository: repository,
+            clock: SystemTrainingClock(),
+            idGenerator: UUIDGenerator()
+        )
+        return DependencyContainer(
+            environment: .live,
+            trainingApplication: application
+        )
     }
 
     /// 从已经装配好的依赖创建根视图。

@@ -2,14 +2,14 @@
 
 ZenTrain 是一款离线优先的 iOS 训练记录应用。这个 Monorepo 将 iOS 客户端、薄后端和未来的跨端契约放在同一个代码库中统一管理版本。
 
-## 阶段 A 状态
+## 当前状态
 
-- `ios/`：iOS 17 SwiftUI 应用，包含 App Target、单元测试 Target、UI 测试 Target 和组合根（Composition Root）。
+- `ios/`：iOS 17 SwiftUI 应用；阶段 A 的工程骨架和阶段 B 的 Domain、Application、内存 Repository 已建立。
 - `backend/`：TypeScript + Fastify 薄后端，当前提供经过测试的 `GET /health` 健康检查接口。
 - `contracts/`：为后续 Agent 接入预留 JSON Schema 和跨端示例的存放位置。
 - `docs/`：保存与代码实现直接相关的架构说明和架构决策记录（ADR）。
 
-阶段 A 只建立可继续开发的工程骨架。领域业务、SwiftData 持久化和手动训练界面分别留到阶段 B、C、D 实现。
+阶段 B 通过 `TrainingApplication` 公共接口和 In-Memory Repository 跑通计划创建、开始训练、逐段记录、完成训练与记录查询。SwiftData 持久化和手动训练界面仍分别留到阶段 C、D；当前业务链路不依赖后端、网络或 AI。
 
 ## 模块说明
 

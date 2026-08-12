@@ -2,7 +2,9 @@
 
 ## 当前目标
 
-按依赖顺序开发第一条手动训练闭环。阶段 A 只建立 Monorepo、最小 iOS 工程、组合根（Composition Root）、后端健康检查和跨端契约边界。
+按依赖顺序开发第一条手动训练闭环。当前阶段 B 已建立纯 Swift Domain、Application Command、查询 Snapshot、内存 Repository，以及从 `TrainingApplication` 公共接口运行的集成测试，正在等待验收。
+
+阶段 B 不引入 SwiftData 或正式训练页面。App 组合根暂时装配内存 Repository；阶段 C 将只替换 Adapter，不改变 Feature 和未来 Agent 使用的 Application 接口。
 
 ## 架构边界
 
