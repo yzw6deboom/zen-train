@@ -8,6 +8,8 @@ protocol TrainingApplication: Sendable {
     func today(on date: Date) async throws -> TodaySnapshot
     func activeWorkout() async throws -> WorkoutSnapshot?
     func record(sessionID: UUID) async throws -> TrainingRecord
+    /// “记录”一级页使用的只读列表查询，不向 Presentation 暴露 Repository 或 SwiftData Entity。
+    func recentRecords(limit: Int) async throws -> [TrainingRecordSummary]
 }
 
 enum TrainingMutation: Equatable, Sendable {

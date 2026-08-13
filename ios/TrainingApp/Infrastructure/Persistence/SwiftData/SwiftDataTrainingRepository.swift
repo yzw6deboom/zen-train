@@ -54,6 +54,17 @@ actor SwiftDataTrainingRepository: TrainingRepository {
         return try sessionEntity(id: id, context: context).map(SwiftDataTrainingMapper.makeSession)
     }
 
+    func loadFinishedSessions(limit: Int) throws -> [WorkoutSession] {
+        let context = ModelContext(modelContainer)
+        return Array(
+            try context.fetch(FetchDescriptor<WorkoutSessionEntity>())
+                .filter { $0.statusRawValue != WorkoutStatus.inProgress.rawValue }
+                .map(SwiftDataTrainingMapper.makeSession)
+                .sorted { ($0.endedAt ?? .distantPast) > ($1.endedAt ?? .distantPast) }
+                .prefix(max(0, limit))
+        )
+    }
+
     func replay(_ request: IdempotencyRequest) throws -> RepositoryStoredValue? {
         let context = ModelContext(modelContainer)
         guard let receipt = try receiptEntity(key: request.key, context: context) else { return nil }

@@ -109,6 +109,24 @@ actor DefaultTrainingApplication: TrainingApplication {
         }
     }
 
+    func recentRecords(limit: Int) async throws -> [TrainingRecordSummary] {
+        do {
+            let sessions = try await repository.loadFinishedSessions(limit: limit)
+            return try sessions.map(makeTrainingRecord).map {
+                TrainingRecordSummary(
+                    sessionID: $0.sessionID,
+                    title: $0.title,
+                    endedAt: $0.endedAt,
+                    status: $0.status
+                )
+            }
+        } catch let error as TrainingApplicationError {
+            throw error
+        } catch {
+            throw TrainingApplicationError.persistenceFailure
+        }
+    }
+
     private func createDailyPlan(
         _ command: CreateDailyPlanCommand,
         idempotency: IdempotencyRequest

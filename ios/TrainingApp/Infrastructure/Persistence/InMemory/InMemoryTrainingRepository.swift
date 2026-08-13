@@ -48,6 +48,15 @@ actor InMemoryTrainingRepository: TrainingRepository {
         sessions[id]
     }
 
+    func loadFinishedSessions(limit: Int) -> [WorkoutSession] {
+        Array(
+            sessions.values
+                .filter { $0.status != .inProgress }
+                .sorted { ($0.endedAt ?? .distantPast) > ($1.endedAt ?? .distantPast) }
+                .prefix(max(0, limit))
+        )
+    }
+
     func replay(_ request: IdempotencyRequest) throws -> RepositoryStoredValue? {
         guard let receipt = receipts[request.key] else { return nil }
         guard receipt.request == request else {

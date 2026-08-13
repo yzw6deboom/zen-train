@@ -51,6 +51,8 @@ protocol TrainingRepository: Sendable {
     func loadPlanRevision(planID: UUID, revision: Int) async throws -> DailyPlan?
     func loadActiveSession() async throws -> WorkoutSession?
     func loadSession(id: UUID) async throws -> WorkoutSession?
+    /// 记录列表只读取已结束的 Session；排序和数量限制在持久化边界完成，避免页面层拼接历史数据。
+    func loadFinishedSessions(limit: Int) async throws -> [WorkoutSession]
     func replay(_ request: IdempotencyRequest) async throws -> RepositoryStoredValue?
 
     func createPlan(
