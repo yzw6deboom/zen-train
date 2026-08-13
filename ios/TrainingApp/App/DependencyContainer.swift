@@ -23,7 +23,15 @@ final class DependencyContainer {
 
     /// 创建正式运行环境使用的依赖容器。
     static func live() -> DependencyContainer {
-        let repository = InMemoryTrainingRepository(calendar: .current)
+        let repository: any TrainingRepository
+        do {
+            repository = SwiftDataTrainingRepository(
+                modelContainer: try TrainingModelContainer.make(),
+                calendar: .current
+            )
+        } catch {
+            preconditionFailure("无法初始化本地训练数据存储：\(error)")
+        }
         let application = DefaultTrainingApplication(
             repository: repository,
             clock: SystemTrainingClock(),

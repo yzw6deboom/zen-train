@@ -8,6 +8,7 @@ actor InMemoryTrainingRepository: TrainingRepository {
     }
 
     private var plans: [UUID: DailyPlan] = [:]
+    private var planRevisions: [UUID: [Int: DailyPlan]] = [:]
     private var sessions: [UUID: WorkoutSession] = [:]
     private var receipts: [UUID: Receipt] = [:]
     private let calendar: Calendar
@@ -33,6 +34,10 @@ actor InMemoryTrainingRepository: TrainingRepository {
 
     func loadPlan(id: UUID) -> DailyPlan? {
         plans[id]
+    }
+
+    func loadPlanRevision(planID: UUID, revision: Int) -> DailyPlan? {
+        planRevisions[planID]?[revision]
     }
 
     func loadActiveSession() -> WorkoutSession? {
@@ -69,6 +74,7 @@ actor InMemoryTrainingRepository: TrainingRepository {
             throw TrainingRepositoryError.activePlanAlreadyExists
         }
         plans[plan.id] = plan
+        planRevisions[plan.id, default: [:]][plan.revision] = plan
         receipts[idempotency.key] = Receipt(request: idempotency, value: .plan(plan))
         return IdempotentWrite(value: plan, wasReplayed: false)
     }
@@ -99,6 +105,7 @@ actor InMemoryTrainingRepository: TrainingRepository {
             throw TrainingRepositoryError.activePlanAlreadyExists
         }
         plans[plan.id] = plan
+        planRevisions[plan.id, default: [:]][plan.revision] = plan
         receipts[idempotency.key] = Receipt(request: idempotency, value: .plan(plan))
         return IdempotentWrite(value: plan, wasReplayed: false)
     }

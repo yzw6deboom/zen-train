@@ -148,6 +148,36 @@ struct DailyPlan: Identifiable, Equatable, Sendable {
         )
     }
 
+    /// 仅供持久化 Adapter 在已经读取并校验的历史数据上重建聚合。
+    ///
+    /// 正常新建仍必须走 `create`，避免 Repository 绕过领域不变量。
+    static func restore(
+        id: UUID,
+        scheduledDate: Date,
+        title: String,
+        document: PlanDocument,
+        projection: ExecutionProjection,
+        status: PlanStatus,
+        revision: Int,
+        provenance: Provenance,
+        createdAt: Date,
+        updatedAt: Date
+    ) throws -> DailyPlan {
+        guard revision > 0, projection.documentRevision == revision else {
+            throw DomainError.validation([.invalidSegmentOrder])
+        }
+        let issues = validationIssues(
+            title: title, activities: projection.activities, status: status, provenance: provenance
+        )
+        guard issues.isEmpty else { throw DomainError.validation(issues) }
+        return DailyPlan(
+            id: id, scheduledDate: scheduledDate,
+            title: title.trimmingCharacters(in: .whitespacesAndNewlines), document: document,
+            projection: projection, status: status, revision: revision, provenance: provenance,
+            createdAt: createdAt, updatedAt: updatedAt
+        )
+    }
+
     /// 用完整的新计划内容替换当前版本；成功时 revision 只增加一次。
     mutating func revise(
         scheduledDate: Date,

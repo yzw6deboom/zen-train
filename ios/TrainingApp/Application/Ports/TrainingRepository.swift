@@ -47,6 +47,8 @@ enum TrainingRepositoryError: Error, Equatable, Sendable {
 protocol TrainingRepository: Sendable {
     func loadDay(on date: Date) async throws -> TrainingDayData
     func loadPlan(id: UUID) async throws -> DailyPlan?
+    /// 读取某一不可变历史版本，供后续差异展示和撤销流程使用。
+    func loadPlanRevision(planID: UUID, revision: Int) async throws -> DailyPlan?
     func loadActiveSession() async throws -> WorkoutSession?
     func loadSession(id: UUID) async throws -> WorkoutSession?
     func replay(_ request: IdempotencyRequest) async throws -> RepositoryStoredValue?

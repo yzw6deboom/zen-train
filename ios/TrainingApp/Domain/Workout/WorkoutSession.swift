@@ -156,6 +156,23 @@ struct WorkoutSession: Identifiable, Equatable, Sendable {
         )
     }
 
+    /// 仅供持久化 Adapter 重建已存在的训练事实；新训练仍必须通过 `start` 固化计划快照。
+    static func restore(
+        id: UUID,
+        planSnapshot: PlanSnapshot,
+        activities: [PerformedActivity],
+        status: WorkoutStatus,
+        feedback: SubjectiveFeedback?,
+        startedAt: Date,
+        endedAt: Date?,
+        revision: Int
+    ) -> WorkoutSession {
+        WorkoutSession(
+            id: id, planSnapshot: planSnapshot, activities: activities, status: status,
+            feedback: feedback, startedAt: startedAt, endedAt: endedAt, revision: revision
+        )
+    }
+
     /// 保存力量组实际值。`nil` 表示沿用快照中的计划值，显式的 0 则会原样保留。
     mutating func recordStrengthSet(
         id: UUID,
