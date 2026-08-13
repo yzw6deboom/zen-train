@@ -45,6 +45,9 @@ final class DependencyContainer {
 
     /// 从已经装配好的依赖创建根视图。
     func makeRootView() -> some View {
-        AppRootView(environment: environment)
+        AppRootView(
+            environment: environment,
+            trainingApplication: trainingApplication
+        )
     }
 }
